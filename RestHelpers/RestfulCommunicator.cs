@@ -21,18 +21,30 @@ namespace RestHelpers
         {
             _baseUrl = baseUrl;
         }
+
+
+        /// <summary>
+        /// Syntactic Sugar to call post request with default credentials
+        /// </summary>
+        public string NewPostRequest(string method, IDictionary<string, string> keyValues)
+        {
+            return NewPostRequest(method, keyValues, null);
+        }
+
+
         /// <summary>
         /// Sends a post request to the sever
         /// </summary>
-        /// <param name="method"></param>
-        /// <param name="keyValues"></param>
         /// <returns></returns>
-        public string NewPostRequest(string method, IDictionary<string, string> keyValues)
+        public string NewPostRequest(string method, IDictionary<string, string> keyValues, ICredentials credentials)
         {
             Uri address = new Uri(_baseUrl + method);
             HttpWebRequest request = WebRequest.Create(address) as HttpWebRequest;
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
+
+            if (credentials != null)
+                request.Credentials = credentials;
 
             StringBuilder data = new StringBuilder();
 
@@ -65,12 +77,17 @@ namespace RestHelpers
 
 
         /// <summary>
+        /// Syntactic sugar for new get request with default credentials
+        /// </summary>
+        public string NewGetRequest(string method, IDictionary<string, string> keyValues)
+        {
+            return NewGetRequest(method, keyValues, null);
+        }
+
+        /// <summary>
         /// Sends a get request to the server
         /// </summary>
-        /// <param name="method"></param>
-        /// <param name="keyValues"></param>
-        /// <returns></returns>
-        public string NewGetRequest(string method, IDictionary<string, string> keyValues)
+        public string NewGetRequest(string method, IDictionary<string, string> keyValues, ICredentials credentials)
         {
             StringBuilder url = new StringBuilder();
             url.Append(_baseUrl);
@@ -89,6 +106,9 @@ namespace RestHelpers
             }
 
             HttpWebRequest request = WebRequest.Create(url.ToString()) as HttpWebRequest;
+
+            if (credentials != null)
+                request.Credentials = credentials;
 
             // Get response  
             using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
