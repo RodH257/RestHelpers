@@ -36,7 +36,7 @@ namespace RestHelpers
         /// Sends a post request to the sever
         /// </summary>
         /// <returns></returns>
-        public string NewPostRequest(string method, IDictionary<string, string> keyValues, ICredentials credentials)
+        public string NewPostRequest(string method, IDictionary<string, string> keyValues, NetworkCredential credentials)
         {
             Uri address = new Uri(_baseUrl + method);
             HttpWebRequest request = WebRequest.Create(address) as HttpWebRequest;
@@ -44,8 +44,10 @@ namespace RestHelpers
             request.ContentType = "application/x-www-form-urlencoded";
 
             if (credentials != null)
-                request.Credentials = credentials;
-
+            {
+                request.Credentials = credentials.GetCredential(address, "Windows");
+                request.PreAuthenticate = true;
+            }
             StringBuilder data = new StringBuilder();
 
             bool first = true;
